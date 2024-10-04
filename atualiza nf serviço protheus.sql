@@ -1,0 +1,65 @@
+--#################################################################
+--PARA ATUALIZAR A nf EMITIDA MANUALMENTE NA PREFEITURA DEVE ATUAIZAR OS CAMPOS ABAIXO:
+--Os campos abaixo existem nas tabelas SF2, SFT e SF3.
+
+--Esses campos tem a finalidade de guardar algumas informações da NFSe gerada na prefeitura.
+
+--_NFELETR -> Numero da NFSE gerada na prefeitura
+--_CODNFE  -> Numero do protocolo de autorização
+--_EMINFE   -> Data de autorização
+--_HORNFE  -> Hora de autorização
+--Obs: Na tabela SE1 também é gerado o E1_NFELETR
+
+SELECT F3_NFELETR ,F3_CODNFE  ,F3_EMINFE  ,F3_HORNFE  ,*
+--BEGIN TRANSACTION UPDATE SF3 SET F3_NFELETR='104' ,F3_CODNFE  ='BGJGW402',F3_EMINFE  ='20210129',F3_HORNFE='16:30:34'
+FROM SF3010 SF3
+WHERE 1=1
+and F3_NFISCAL='000000107'
+and F3_CLIEFOR='012970'
+
+
+SELECT FT_NFELETR ,FT_CODNFE  ,FT_EMINFE  ,FT_HORNFE  ,*
+--BEGIN TRANSACTION UPDATE SFT SET FT_NFELETR ='104' ,FT_CODNFE  ='BGJGW402',FT_EMINFE  ='20210129',FT_HORNFE ='16:30:34'
+FROM SFT010 SFT
+WHERE 1=1
+and FT_NFISCAL='000000107'
+and FT_CLIEFOR='012970'
+
+ 
+SELECT F2_NFELETR ,F2_CODNFE  ,F2_EMINFE  ,F2_HORNFE  ,*
+--BEGIN TRANSACTION UPDATE SF2 SET  F2_NFELETR ='104',F2_CODNFE  ='BGJGW402',F2_EMINFE  ='20210129',F2_HORNFE ='16:30:34'
+FROM SF2010 SF2
+WHERE 1=1
+and F2_DOC='000000107'
+and F2_CLIENTE='012970'
+
+--commit
+
+
+--#################################################################
+--ATUALIZAR NFS NAS TABELAS DO SPED
+
+--TABELA DE Nota Fiscal Eletrônica de Serviço
+select *
+--BEGIN TRANSACTION UPDATE S51 SET NFSE_PROT='BGJGW402', NFSE='104', STATUS='6'
+FROM tss_nfe_producao..SPED051 S51
+WHERE NFSE_ID LIKE'%000000107%'
+
+
+--TABELA DE Lotes X Nota Fiscal Eletrônica de Serviço
+
+--CORRIGIR UM DOS ITENS PARA AUTORIZADO
+select *
+--BEGIN TRANSACTION UPDATE S55 SET CSTAT='T',DTREC_PROC ='20210129',HRREC_PROC='16:22:33',XML_ERRO=NULL,DTVER_LOTP='20210129',HRVER_LOTP='16:30:34',NFSE_PROT='BGJGW402'
+FROM tss_nfe_producao..SPED055 S55
+WHERE NFSE_ID LIKE'%000000107%'
+--AND R_E_C_N_O_='48'
+
+--EXCLUIR OS ITENS RESTANTES
+select *
+--BEGIN TRANSACTION UPDATE S55 SET D_E_L_E_T_ ='*', 	R_E_C_D_E_L_ =R_E_C_N_O_
+FROM tss_nfe_producao..SPED055 S55
+WHERE NFSE_ID LIKE'%000000107%'
+--AND R_E_C_N_O_='49'
+
+--commit

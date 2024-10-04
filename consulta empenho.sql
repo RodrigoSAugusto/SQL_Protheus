@@ -1,0 +1,1 @@
+select * from SD3010 where D3_FILIAL = '030102' and D3_EMISSAO >= '20220401' and D3_OP = 'i0203A01001'
